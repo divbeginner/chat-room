@@ -1,0 +1,24 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "async-limiter": {
+      "integrity": "sha512-jp/uFnooOiO+L211eZOoSyzpOITMXx1rBITauYykG3BRYPu8h0UcxsPNB04RR5vo4Tyz3+ay17tR6JVf9qzYWg==",
+      "resolved": "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.0.tgz",
+      "version": "1.0.0"
+    },
+    "safe-buffer": {
+      "integrity": "sha512-kKvNJn6Mm93gAczWVJg7wH+wGYWNrDHdWvpUmHyEsgCtIwwo3bqPtV4tR5tuPaUhTOo/kvhVwd8XwwOllGYkbg==",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz",
+      "version": "5.1.1"
+    },
+    "ultron": {
+      "integrity": "sha512-UIEXBNeYmKptWH6z8ZnqTeS8fV74zG0/eRU9VGkpzz+LIJNs8W/zM/L+7ctCkRrgbNnnR0xxw4bKOr0cW0N0Og==",
+      "resolved": "https://registry.npmjs.org/ultron/-/ultron-1.1.1.tgz",
+      "version": "1.1.1"
+    },
+    "ws": "^3.3.2"
+  },
+  "scripts": {
+    "start": "app.js"
+    }   
+}

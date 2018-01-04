@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{margin: 0; padding: 0; font-family: '微软雅黑'}
+        .topwrap{height: 160px; background: #6F5499;padding:20px 30px;}
+        .topwrap h1 {font-size: 60px; color: #fff;}
+        .topwrap p {font-size: 30px; color: #CCC; width: 100%; }
+        .wrap{width:90%;margin:0 auto;margin-top:20px;margin-bottom: 30px; overflow: hidden;}
+        .left{float:left;width:65%; border: 1px solid #ccc; border-radius:5px; overflow: hidden; height: 530px;}
+        .left>p,.right>p{border-radius:5px 5px 0 0;padding:10px;font-weight: bold; font-size: 18px; border-bottom:1px solid #ccc; background: #F5F5F5;}
+        .content{ width:95.8%; height: 400px;padding:2%; float: left;overflow-y:scroll; }
+        .content::-webkit-scrollbar {display: none;}
+        .content>p{margin: 0 auto; margin: 20px 0px; text-align: center;}
+        .content>p span {padding:5px 20px;border-radius: 20px; background: #f0f0f0; color: #101010;}
+        .right{width: 30%;float: right; border: 1px solid;border: 1px solid #ccc; border-radius:5px; overflow: hidden; height: 530px;}
+        .userlist{padding:15px;}
+        .userlist p{margin: 10px;}
+        .subclass{ width:96%;clear: both; margin: 0 auto;}
+        .subclass input{width:84.9%; height: 20px;padding:7px 2%; border-radius:5px 0 0 5px; border: 1px solid #ccc; border-right:none;float: left;  }
+        .subclass button {float: left;width:10%; height: 36px;margin-bottom: 10px;border-radius: 0 5px 5px 0; border: 1px solid #ccc; background: #fcfcfc }
+        .say{font-size: 17px;margin-bottom: 20px;}
+        .say p:nth-of-type(2){font-size: 14px;text-indent:1em}
+    </style>
+</head>
+<body>
+    <div class="topwrap">
+        <h1>Getting startend with WebSocket!</h1>
+        <p>Learn JavaScript, Node.js, WebSocket, npm</p>
+    </div>
+    <div class="wrap">
+        <div class="left">
+            <p>Room</p>
+            <div class="content" id="content"></div>
+            <div class="subclass">
+                <input type="text" id="text" placeholder="Content..." />
+                <button id="btn">GO</button>
+            </div>
+        </div>
+
+        <div class="right">
+                <p>User</p>
+            <div class="userlist" id="userlist"></div>
+        </div>
+        
+        
+        
+    </div>  
+</body>
+<script>
+
+window.onload = function(){
+    var ws = new WebSocket('ws://192.168.199.206:233');  //打开一个wensocket连接
+    
+    //监听连接成功
+    ws.onopen = function() {        
+    console.log('Get ready to start work!!');
+    work(ws);
+    };
+
+    //监听错误
+    ws.onerror = function(err){
+        console.log(err);
+        alert('WebSocket 连接失败..');
+        return;
+    }
+}
+
+
+function work(ws) {
+
+    var text = document.getElementById('text');
+    var btn = document.getElementById('btn');
+    var userlist = document.getElementById('userlist');
+    var content = document.getElementById('content');
+
+    while(true) {
+        var setname = prompt('起一个名字吧');
+        if(setname) {
+            var json = {"msg":setname,"type":"setname"};
+            ws.send(JSON.stringify(json));
+            break;
+        }else if(setname === null){
+            return;
+        }
+    }
+    
+
+    //监听从服务端发回的消息
+    ws.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        console.log(data);
+        if(data.type == 'name' || data.type == 'leave') {
+            var p1 = document.createElement('p');
+            var p2 = document.createElement('p');
+
+            for(var i in data.username) {
+                p1.innerHTML += "<p>" + data.username[i] + "</p>";
+            }
+            userlist.innerHTML = '';
+            userlist.appendChild(p1);
+            if(data.type == 'name' ) {
+                p2.innerHTML = '<span>'+ data.msg +' 加入了房间</span>';
+            }
+            if(data.type == 'leave' ) {
+                p2.innerHTML = '<span>'+ data.msg +' 离开了房间</span>';
+            }
+
+            content.appendChild(p2);
+        }
+        if(data.type == 'say') {
+            var date = new Date();
+            var hours = date.getHours();
+            var time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+            var div = document.createElement('div');
+            div.innerHTML = "<p>"+data.username+'   '+time+"</p> <p >"+ data.msg +"</p>";
+            div.className = 'say';
+            content.appendChild(div);
+            content.scrollTop = content.scrollHeight;
+            console.log(data.msg);
+        }
+    }
+
+   //监听键盘
+   text.onkeydown = function(event) { 
+        var event = event || window.event;
+        if(event.keyCode == 13){
+            var json = {"msg":text.value,"type":"say"};
+            ws.send(JSON.stringify(json));
+            text.value = '' ;
+            return false; 
+        }
+   }
+
+   //点击发送触发
+   btn.onclick = function(){
+       var json = {"msg":text.value,"username":text.value,"type":"say"};
+       ws.send(JSON.stringify(json));
+       text.value = '';
+   }
+
+}
+
+
+</script>
+</html>
